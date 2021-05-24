@@ -1,7 +1,9 @@
 import { GetStaticPaths, GetStaticProps } from 'next';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { Fragment } from 'react';
 import Head from 'next/head';
 import Prismic from '@prismicio/client';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { RichText } from 'prismic-dom';
 import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
@@ -37,7 +39,7 @@ interface PostProps {
   post: Post;
 }
 
-export default function Post({ post }: PostProps) {
+export default function Post({ post }: PostProps): JSX.Element {
   const { isFallback } = useRouter();
 
   if (isFallback) {
@@ -45,11 +47,13 @@ export default function Post({ post }: PostProps) {
   }
 
   const minutesToRead = post.data.content.reduce((acc, content) => {
-    function countWords(str: string) {
+    function countWords(str: string): number {
       return str.trim().split(/\s+/).length;
     }
 
+    // eslint-disable-next-line no-param-reassign
     acc += countWords(content.heading) / 200;
+    // eslint-disable-next-line no-param-reassign
     acc += countWords(RichText.asText(content.body)) / 200;
 
     return Math.ceil(acc);
@@ -83,10 +87,10 @@ export default function Post({ post }: PostProps) {
           </div>
           <div className={styles.content}>
             {post.data.content.map((content, index) => (
-              <Fragment key={index}>
+              <Fragment key={String(index)}>
                 <h2>{content.heading}</h2>
                 <div
-                  key={index}
+                  key={String(index)}
                   dangerouslySetInnerHTML={{
                     __html: RichText.asHtml(content.body),
                   }}
@@ -117,7 +121,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
   return {
     paths,
-    fallback: true,
+    fallback: 'blocking',
   };
 };
 
